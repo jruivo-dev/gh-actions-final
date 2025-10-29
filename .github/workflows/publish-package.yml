@@ -52,4 +52,5 @@ jobs:
             BASE="${{ steps.gitversion.outputs.MajorMinorPatch }}"
             VERSION="${BASE}-${{ github.event.inputs.versionSuffix }}"
           fi
+          echo "VERSION=$VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
