@@ -36,7 +36,7 @@ jobs:
       - name: GitVersion Setup
         uses: gittools/actions/gitversion/setup@v4
         with:
-          versionSpec: '6.x.x'
+          versionSpec: '6.x'
 
       - name: GitVersion Execute
         id: gitversion
