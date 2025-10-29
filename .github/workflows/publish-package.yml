@@ -1,0 +1,56 @@
+name: Publish NuGet Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionSuffix:
+        description: 'Optional version suffix (e.g. beta1)'
+        required: false
+  push:
+    branches: [ develop, master ]
+    paths:
+      - 'src/**'
+
+permissions:
+  contents: read
+  packages: write
+
+
+env:
+  buildConfiguration: Release
+
+jobs:
+  build-pack:
+    name: Build & Pack
+    runs-on: ubuntu-latest
+    outputs:
+      PACKAGE_VERSION: ${{ steps.set_version.outputs.PACKAGE_VERSION }}
+    env:
+      buildConfiguration: Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: GitVersion Setup
+        uses: gittools/actions/gitversion/setup@v1
+        with:
+          versionSpec: '6.0.x'
+
+      - name: GitVersion Execute
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v1
+        with:
+          useConfigFile: true
+          configFilePath: .github/GitVersion.yml
+
+      - name: Compute Package Version
+        id: set_version
+        run: |
+          VERSION="${{ steps.gitversion.outputs.SemVer }}"
+          if [ -n "${{ github.event.inputs.versionSuffix }}" ]; then
+            VERSION="${VERSION}-${{ github.event.inputs.versionSuffix }}"
+          fi
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Resolved package version: $VERSION"

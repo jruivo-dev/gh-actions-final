@@ -1,0 +1,42 @@
+mode: ContinuousDelivery
+next-version: 0.1.0
+tag-prefix: '[vV]'
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatch
+commit-message-incrementing: Enabled
+ignore:
+  sha: []
+increment: Patch
+
+branches:
+  master:
+    regex: ^master$
+    label: ''                       # stable, no prerelease
+    increment: Patch
+    tracks-release-branches: true
+
+  develop:
+    regex: ^develop$
+    label: alpha                    # prereleases of the next minor
+    increment: Minor
+    source-branches: [ master ]
+
+  release:
+    regex: ^release[/-].*$
+    label: rc                        # release candidate builds
+    is-release-branch: true
+    increment: None
+    source-branches: [ develop, master ]
+
+  feature:
+    regex: ^feature[/-].*$
+    label: alpha
+    increment: Minor
+    source-branches: [ develop, master ]
+
+  pull-request:
+    regex: ^(pull|pull-request|pr)[/-].*$
+    label: pr
+    increment: Inherit
+    track-merge-target: true
+    source-branches: [ master, develop, release, feature ]
